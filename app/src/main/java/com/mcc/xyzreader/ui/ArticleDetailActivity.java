@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.app.ShareCompat;
@@ -18,9 +18,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowInsets;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.mcc.xyzreader.R;
 import com.mcc.xyzreader.data.ArticleLoader;
 import com.mcc.xyzreader.data.ItemsContract;
@@ -38,6 +39,7 @@ public class ArticleDetailActivity extends AppCompatActivity
 
     private ViewPager mPager;
     private MyPagerAdapter mPagerAdapter;
+    private ImageView image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,8 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         getLoaderManager().initLoader(0, null, this);
 
+        image = (ImageView) findViewById(R.id.image);
+
         mPagerAdapter = new MyPagerAdapter(getFragmentManager());
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mPagerAdapter);
@@ -54,10 +58,12 @@ public class ArticleDetailActivity extends AppCompatActivity
                 .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()));
         mPager.setPageMarginDrawable(new ColorDrawable(0x22000000));
 
-        mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrollStateChanged(int state) {
-                super.onPageScrollStateChanged(state);
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+
             }
 
             @Override
@@ -66,7 +72,13 @@ public class ArticleDetailActivity extends AppCompatActivity
                     mCursor.moveToPosition(position);
                 }
                 mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
+                loadData();
                 //updateUpButtonPosition();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
 
@@ -76,6 +88,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(getString(R.string.app_name));
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
         if (savedInstanceState == null) {
@@ -115,6 +128,7 @@ public class ArticleDetailActivity extends AppCompatActivity
                 if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
                     final int position = mCursor.getPosition();
                     mPager.setCurrentItem(position, false);
+                    loadData();
                     break;
                 }
                 mCursor.moveToNext();
@@ -129,27 +143,10 @@ public class ArticleDetailActivity extends AppCompatActivity
         mPagerAdapter.notifyDataSetChanged();
     }
 
-    public void onUpButtonFloorChanged(long itemId, ArticleDetailFragment fragment) {
-        if (itemId == mSelectedItemId) {
-            //mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
-            //updateUpButtonPosition();
-        }
-    }
-
 
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
-        public MyPagerAdapter(FragmentManager fm) {
+        private MyPagerAdapter(FragmentManager fm) {
             super(fm);
-        }
-
-        @Override
-        public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            super.setPrimaryItem(container, position, object);
-            ArticleDetailFragment fragment = (ArticleDetailFragment) object;
-            if (fragment != null) {
-                //mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
-                //updateUpButtonPosition();
-            }
         }
 
         @Override
@@ -172,5 +169,14 @@ public class ArticleDetailActivity extends AppCompatActivity
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void loadData() {
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.placeholder(R.color.photo_placeholder);
+        requestOptions.error(R.color.photo_placeholder);
+
+        String imageUrl = mCursor.getString(ArticleLoader.Query.PHOTO_URL);
+        Glide.with(ArticleDetailActivity.this).setDefaultRequestOptions(requestOptions).load(imageUrl).into(image);
     }
 }

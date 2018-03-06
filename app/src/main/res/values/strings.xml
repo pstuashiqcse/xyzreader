@@ -9,4 +9,7 @@
 
     <string name="up">Up</string>
 
+    <string name="loading">Loading data...</string>
+    <string name="loaded">Data loaded!</string>
+
 </resources>
