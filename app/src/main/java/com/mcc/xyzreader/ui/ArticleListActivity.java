@@ -60,6 +60,13 @@ public class ArticleListActivity extends AppCompatActivity implements
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         getLoaderManager().initLoader(0, null, this);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(getString(R.string.app_name));
+            //getSupportActionBar().setIcon(R.drawable.logo);
+        }
+
         if (savedInstanceState == null) {
             refresh();
         }
@@ -112,6 +119,11 @@ public class ArticleListActivity extends AppCompatActivity implements
         StaggeredGridLayoutManager sglm =
                 new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(sglm);
+
+        if(cursor != null && cursor.getCount() > 0) {
+            mIsRefreshing = false;
+            updateRefreshingUI();
+        }
     }
 
     @Override
