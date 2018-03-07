@@ -33,14 +33,15 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/detail_card_top_margin"
-                android:background="@drawable/img_layer"/>
+                android:background="@drawable/img_layer" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
                 app:elevation="4dp"
+                android:background="@drawable/bg_gradient_toolbar"
+                app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -59,7 +60,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:focusable="true"
         app:elevation="6dp"
+        app:rippleColor="@color/white"
         app:srcCompat="@drawable/ic_share" />
 
 </android.support.design.widget.CoordinatorLayout>
