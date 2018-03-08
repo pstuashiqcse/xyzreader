@@ -12,16 +12,19 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.github.florent37.glidepalette.GlidePalette;
 import com.mcc.xyzreader.R;
 import com.mcc.xyzreader.data.ArticleLoader;
 import com.mcc.xyzreader.data.ItemsContract;
@@ -41,6 +44,7 @@ public class ArticleDetailActivity extends AppCompatActivity
     private MyPagerAdapter mPagerAdapter;
     private ImageView image;
 
+    private FloatingActionButton fab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +77,7 @@ public class ArticleDetailActivity extends AppCompatActivity
                 }
                 mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
                 loadData();
-                //updateUpButtonPosition();
+
             }
 
             @Override
@@ -98,7 +102,7 @@ public class ArticleDetailActivity extends AppCompatActivity
             }
         }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -177,6 +181,20 @@ public class ArticleDetailActivity extends AppCompatActivity
         requestOptions.error(R.color.photo_placeholder);
 
         String imageUrl = mCursor.getString(ArticleLoader.Query.PHOTO_URL);
-        Glide.with(ArticleDetailActivity.this).setDefaultRequestOptions(requestOptions).load(imageUrl).into(image);
+
+        GlidePalette.with(imageUrl);
+        Glide.with(this).load(imageUrl)
+                .listener(GlidePalette.with(imageUrl)
+
+                        .use(GlidePalette.Profile.VIBRANT)
+                        .intoBackground(image, GlidePalette.Swatch.RGB)
+                        .crossfade(true)
+                )
+                .into(image);
     }
+
+    public FloatingActionButton getFab() {
+        return fab;
+    }
+
 }

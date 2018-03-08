@@ -5,6 +5,8 @@ import android.app.LoaderManager;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.NestedScrollView;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
@@ -43,6 +45,8 @@ public class ArticleDetailFragment extends Fragment implements
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
+
+    private FloatingActionButton fab;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -89,6 +93,8 @@ public class ArticleDetailFragment extends Fragment implements
             Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
 
+        fab = ((ArticleDetailActivity) getActivity()).getFab();
+
         bindViews();
         return mRootView;
     }
@@ -109,6 +115,20 @@ public class ArticleDetailFragment extends Fragment implements
         if (mRootView == null) {
             return;
         }
+
+        NestedScrollView nsv = (NestedScrollView) mRootView.findViewById(R.id.nsv);
+        nsv.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if(fab != null) {
+                    if (scrollY > oldScrollY) {
+                        fab.hide();
+                    } else {
+                        fab.show();
+                    }
+                }
+            }
+        });
 
         TextView titleView = (TextView) mRootView.findViewById(R.id.article_title);
         TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
